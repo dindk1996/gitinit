@@ -1,9 +1,19 @@
-resource "aws_vpc" "main" {
-  cidr_block       = "10.0.0.0/16"
-  instance_tenancy = "default"
-
-  tags = {
-    Name = "demo-vpc"
-    Purpose = "Jenkins Demo"
+@Library("mylibs") _
+pipeline {
+  agent any
+  tools {
+    maven 'maven2'
+  }
+  stages{
+    stage("Maven Build"){
+      steps{
+        sh "mvn clean package"
+      }
+    }
+    stage("Deploy To Dev"){
+      steps{
+        tomcatDeploy("tomcat-dev","ec2-user",["172.31.13.89","172.31.13.89"])
+      }
+    }
   }
 }
